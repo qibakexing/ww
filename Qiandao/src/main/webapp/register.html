@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>欢迎加入51住址</title>
+<style type="text/css">
+div{
+	width:400px;
+	}
+.zq{
+	color:green;
+	font-size:15px;
+}
+.cw{
+	color:red;
+	font-size:15px;
+}
+</style>
+<script type="text/javascript" src="js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+//使用Ajax校验用户名是否存在
+function checkName(obj) {
+	$.post("usernamecheck","name="+obj.value,function(data){
+		console.log(data);
+		var obj=eval("("+data+")");
+		if(obj.code==1){
+			//成功
+			$("#lbmsg1").removeClass("cw").addClass("zq").html(obj.msg);
+			
+		}else{
+			$("#lbmsg1").removeClass("zq").addClass("cw").html(obj.msg);
+		}
+		
+	});
+}
+//2次密码一致性校验
+function checkpwd(obj) {
+	var p2=obj.value;//第二次的密码
+	var p1=$("#pd1").val();//第一次的密码
+	console.log(p1)
+	console.log(p2)
+	if(p2==p1){//一致
+		$("#lbmsg2").removeClass("cw").addClass("zq").html("OK");
+	}else{//不一致
+		$("#lbmsg2").removeClass("zq").addClass("cw").html("两次密码不一致");
+	}
+}
+
+//实现注册
+function register() {
+	$.post("useradd","un="+$("#un").val()+"&pd="+$("#pd1").val(),function(data){
+		var obj=JSON.parse(data);
+		if(obj.code==1){
+			//成功
+			alert(obj.msg);
+			location.href="login.html";
+		}else{
+			alert(obj.msg);
+		}
+	})
+}
+</script>
+</head>
+<body>
+
+<div>
+<h1>注册页面</h1>
+<input placeholder="请输入用户名" id="un" onchange="checkName(this)"><label id="lbmsg1"></label><br/>
+<input type="password" placeholder="请输入密码" id="pd1"><br/>
+<input  type="password " placeholder="请再次输入密码" onchange="checkpwd(this)" id="pd2"><label id="lbmsg2"></label><br/>
+<button onclick="register()">注册</button>
+<p>亲，已有账号,<a href="login.html">点击登录</a></p>
+</div>
+</body>
+</html>

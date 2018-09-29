@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>欢迎登陆</title>
+<!--引用css文件  -->
+<link rel="stylesheet" type="text/css" href="css/main.css"/>
+<style type="text/css">
+div{
+	width:400px;
+	align:center;
+}
+button{
+	margin-left:60px;
+	margin-top:10px;
+}
+</style>
+<script type="text/javascript" src="js/jquery-2.1.0.min.js"></script>
+<!--根据IP获取定位城市  -->
+<script type="text/javascript" src="http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js"></script>
+<script type="text/javascript">
+$(function(){
+	//var position=JSON.parse(remote_ip_info);
+	//remote_ip_info.city
+	console.log(remote_ip_info.city);
+})
+//改变验证码
+function changeImg(obj) {
+	obj.src="createcode?r="+new Date()+Math.random();
+}
+//校验验证码
+function checkcode(obj) {
+	console.log(obj);
+	if(obj.value.length==4){
+		//Ajax校验
+		$.get("checkcode","code="+obj.value,function(data){
+			if(data==1)//成功
+			{
+				$("#lbmsg1").removeClass("cw").addClass("zq");
+			}else{
+				//失败
+				$("#lbmsg1").removeClass("zq").addClass("cw");
+				//刷新验证码
+				changeImg($("#img1")[0]);
+			}
+		});
+	}
+}
+//实现登录
+function login() {
+	$.post(
+			"userlogin",
+			"un="+$("#un").val()+"&pd="+$("#pd1").val(),
+			function(data){
+				//js 解析json  一种：eval("("+要解析的字符串+")")  二种：JSON.parse(要解析的字符串)
+				var obj=JSON.parse(data);
+				if(obj.code==1){
+					//成功
+					//跳转页面
+					location.href="address.html";
+				}else{
+					alert(obj.msg);
+					//刷新验证码
+					changeImg($("#img1")[0]);
+				}
+	})
+}
+</script>
+<style type="text/css">
+.zq{
+	color:green;
+	font-size:15px;
+}
+.cw{
+	color:red;
+	font-size:15px;
+}
+</style>
+</head>
+<body>
+
+<div>
+<h1>登陆页面</h1>
+<input placeholder="请输入用户名" id="un"><label id="lbmsg1"></label><br/>
+<input type="password" placeholder="请输入密码" id="pd1"><br/>
+<input  type="text" placeholder="输入验证码" style="width: 60px" onkeyup="checkcode(this)" id="code1"><img src="createcode" onclick="changeImg(this)" id="img1"/><label id="lbmsg1"></label><br/>
+<button onclick="login()">登陆</button>
+<p>亲，还没注册,<a href="register.html">快来加入我们</a></p>
+</div>
+</body>
+</html>
